@@ -1,0 +1,23 @@
+{
+  "components": [
+    {
+      "label": "Description",
+      "type": "textfield",
+      "key": "complaint_body",
+      "description": "Describe the problem"
+    },
+    {
+      "key": "button1",
+      "label": "Send",
+      "type": "button"
+    }
+  ],
+  "type": "default",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.3.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.17.0",
+  "schemaVersion": 4
+}

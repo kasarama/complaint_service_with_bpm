@@ -1,0 +1,39 @@
+{
+  "components": [
+    {
+      "label": "Complaint Title",
+      "type": "textfield",
+      "key": "complaint_title",
+      "description": "what would you like to complain about?"
+    },
+    {
+      "key": "first_name",
+      "label": "First name",
+      "type": "textfield"
+    },
+    {
+      "key": "last_name",
+      "label": "Last name",
+      "type": "textfield"
+    },
+    {
+      "key": "email",
+      "label": "E-mail",
+      "type": "textfield",
+      "validate": {}
+    },
+    {
+      "key": "button2",
+      "label": "Next",
+      "type": "button"
+    }
+  ],
+  "type": "default",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.3.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.17.0",
+  "schemaVersion": 4
+}

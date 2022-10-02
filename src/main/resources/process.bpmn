@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0fr9mxs" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.1">
+  <bpmn:process id="NewComplainReciveProcess" name="New Complain Recive Process" isExecutable="true" camunda:versionTag="1.0.4">
+    <bpmn:startEvent id="StartEvent_1" name="User wants to complain">
+      <bpmn:outgoing>SequenceFlow_1fp17al</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1fp17al" sourceRef="StartEvent_1" targetRef="add_contact_data" />
+    <bpmn:userTask id="add_contact_data" name="Add Contact Data" camunda:formKey="camunda-forms:/forms/add_contact_data.form">
+      <bpmn:incoming>SequenceFlow_1fp17al</bpmn:incoming>
+      <bpmn:outgoing>Flow_1pxe5ci</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1pxe5ci" sourceRef="add_contact_data" targetRef="send_complaint" />
+    <bpmn:userTask id="send_complaint" name="Send Complaint" camunda:formKey="camunda-forms:/forms/send_new_complaint.form">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="complaint_body" label="Description" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1pxe5ci</bpmn:incoming>
+      <bpmn:outgoing>Flow_0t07lb6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0t07lb6" sourceRef="send_complaint" targetRef="complaint_autovalidation" />
+    <bpmn:exclusiveGateway id="Gateway_19yvxv4">
+      <bpmn:incoming>Flow_1jbaw7i</bpmn:incoming>
+      <bpmn:outgoing>invalid_complaint_received</bpmn:outgoing>
+      <bpmn:outgoing>valid_complaint_received</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="invalid_complaint_received" name="Invalid Complaint" sourceRef="Gateway_19yvxv4" targetRef="send_rejection_email">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{is_complaint_valid == 'false'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_1x8n2v5" name="Complain rejscted">
+      <bpmn:incoming>Flow_0jmj425</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0jmj425" sourceRef="send_rejection_email" targetRef="Event_1x8n2v5" />
+    <bpmn:sequenceFlow id="valid_complaint_received" name="Valid Complaint" sourceRef="Gateway_19yvxv4" targetRef="Gateway_0npn2to">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{is_complaint_valid == 'true'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:parallelGateway id="Gateway_0npn2to">
+      <bpmn:incoming>valid_complaint_received</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vq88xs</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0o1i17v</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_1vq88xs" sourceRef="Gateway_0npn2to" targetRef="review_complaint" />
+    <bpmn:sequenceFlow id="Flow_0ieak00" sourceRef="review_complaint" targetRef="Gateway_0gm1cqi" />
+    <bpmn:parallelGateway id="Gateway_0gm1cqi">
+      <bpmn:incoming>Flow_0ieak00</bpmn:incoming>
+      <bpmn:incoming>Flow_1lxat68</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ob2dm2</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_0o1i17v" sourceRef="Gateway_0npn2to" targetRef="send_auto_response" />
+    <bpmn:sequenceFlow id="Flow_1lxat68" sourceRef="send_auto_response" targetRef="Gateway_0gm1cqi" />
+    <bpmn:serviceTask id="complaint_autovalidation" name="Auto Validate Complaint&#39;s Body" camunda:delegateExpression="#{autoValidateComplaint}">
+      <bpmn:incoming>Flow_0t07lb6</bpmn:incoming>
+      <bpmn:outgoing>Flow_1jbaw7i</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="adds_to_case" name="Adds To Case" sourceRef="Gateway_07v5uzl" targetRef="add_to_existing_case">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{case_action == 'add'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1ob2dm2" sourceRef="Gateway_0gm1cqi" targetRef="Gateway_07v5uzl" />
+    <bpmn:sequenceFlow id="solves_case" name="Opens and Solves Case" sourceRef="Gateway_07v5uzl" targetRef="open_and_solve_case">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{case_action == 'solve'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="opens_new_case" name="Opens New Case" sourceRef="Gateway_07v5uzl" targetRef="open_new_case">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{case_action == 'new'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0qirlsj" sourceRef="open_and_solve_case" targetRef="Gateway_0qigol5" />
+    <bpmn:sequenceFlow id="Flow_1kfx625" sourceRef="open_new_case" targetRef="Gateway_0qigol5" />
+    <bpmn:sequenceFlow id="Flow_0zdcez4" sourceRef="add_to_existing_case" targetRef="Gateway_0qigol5" />
+    <bpmn:sequenceFlow id="Flow_0ydbsjq" sourceRef="Gateway_0qigol5" targetRef="send_reasponse" />
+    <bpmn:endEvent id="Event_06pp7ka" name="Complaint Received">
+      <bpmn:incoming>Flow_0dkxu9c</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0dkxu9c" sourceRef="send_reasponse" targetRef="Event_06pp7ka" />
+    <bpmn:sequenceFlow id="Flow_1jbaw7i" sourceRef="complaint_autovalidation" targetRef="Gateway_19yvxv4" />
+    <bpmn:userTask id="review_complaint" name="Review Complaint">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="review_reult" label="Case action" type="string" defaultValue="solve" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1vq88xs</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ieak00</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="send_rejection_email" name="Send Rejection E-mail" camunda:delegateExpression="#{sendRejectionEmail}">
+      <bpmn:incoming>invalid_complaint_received</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jmj425</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="send_auto_response" name="Send Auto Response" camunda:delegateExpression="#{sendAutoResponse}">
+      <bpmn:incoming>Flow_0o1i17v</bpmn:incoming>
+      <bpmn:outgoing>Flow_1lxat68</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_07v5uzl">
+      <bpmn:incoming>Flow_1ob2dm2</bpmn:incoming>
+      <bpmn:outgoing>adds_to_case</bpmn:outgoing>
+      <bpmn:outgoing>solves_case</bpmn:outgoing>
+      <bpmn:outgoing>opens_new_case</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gateway_0qigol5">
+      <bpmn:incoming>Flow_0qirlsj</bpmn:incoming>
+      <bpmn:incoming>Flow_1kfx625</bpmn:incoming>
+      <bpmn:incoming>Flow_0zdcez4</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ydbsjq</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="send_reasponse" name="Send Response" camunda:delegateExpression="#{sendResponseEmail}">
+      <bpmn:incoming>Flow_0ydbsjq</bpmn:incoming>
+      <bpmn:outgoing>Flow_0dkxu9c</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="open_new_case" name="Open New Unsolved Case" camunda:formKey="camunda-forms:/forms/case_response.form">
+      <bpmn:incoming>opens_new_case</bpmn:incoming>
+      <bpmn:outgoing>Flow_1kfx625</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="add_to_existing_case" name="Add Complaint to Existing Case" camunda:formKey="camunda-forms:/forms/case_response.form">
+      <bpmn:incoming>adds_to_case</bpmn:incoming>
+      <bpmn:outgoing>Flow_0zdcez4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="open_and_solve_case" name="Open New Solved Case" camunda:formKey="camunda-forms:/forms/case_response.form">
+      <bpmn:incoming>solves_case</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qirlsj</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="NewComplainReciveProcess">
+      <bpmndi:BPMNEdge id="Flow_1pxe5ci_di" bpmnElement="Flow_1pxe5ci">
+        <di:waypoint x="350" y="117" />
+        <di:waypoint x="380" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1fp17al_di" bpmnElement="SequenceFlow_1fp17al">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="250" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0t07lb6_di" bpmnElement="Flow_0t07lb6">
+        <di:waypoint x="480" y="117" />
+        <di:waypoint x="510" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mf3zv8_di" bpmnElement="invalid_complaint_received">
+        <di:waypoint x="685" y="117" />
+        <di:waypoint x="730" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="667" y="99" width="86" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jmj425_di" bpmnElement="Flow_0jmj425">
+        <di:waypoint x="830" y="117" />
+        <di:waypoint x="872" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01267dp_di" bpmnElement="valid_complaint_received">
+        <di:waypoint x="660" y="142" />
+        <di:waypoint x="660" y="235" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="637" y="186" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vq88xs_di" bpmnElement="Flow_1vq88xs">
+        <di:waypoint x="660" y="285" />
+        <di:waypoint x="660" y="360" />
+        <di:waypoint x="730" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ieak00_di" bpmnElement="Flow_0ieak00">
+        <di:waypoint x="830" y="360" />
+        <di:waypoint x="900" y="360" />
+        <di:waypoint x="900" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0o1i17v_di" bpmnElement="Flow_0o1i17v">
+        <di:waypoint x="685" y="260" />
+        <di:waypoint x="730" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1lxat68_di" bpmnElement="Flow_1lxat68">
+        <di:waypoint x="830" y="260" />
+        <di:waypoint x="900" y="260" />
+        <di:waypoint x="900" y="285" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ob2dm2_di" bpmnElement="Flow_1ob2dm2">
+        <di:waypoint x="925" y="310" />
+        <di:waypoint x="975" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0tgjb45_di" bpmnElement="adds_to_case">
+        <di:waypoint x="1025" y="310" />
+        <di:waypoint x="1080" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1019" y="292" width="68" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o7y2o5_di" bpmnElement="solves_case">
+        <di:waypoint x="1000" y="335" />
+        <di:waypoint x="1000" y="420" />
+        <di:waypoint x="1080" y="420" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="985" y="375" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1bvlo2b_di" bpmnElement="opens_new_case">
+        <di:waypoint x="1000" y="285" />
+        <di:waypoint x="1000" y="210" />
+        <di:waypoint x="1080" y="210" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="973" y="245" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qirlsj_di" bpmnElement="Flow_0qirlsj">
+        <di:waypoint x="1180" y="420" />
+        <di:waypoint x="1290" y="420" />
+        <di:waypoint x="1290" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1kfx625_di" bpmnElement="Flow_1kfx625">
+        <di:waypoint x="1180" y="210" />
+        <di:waypoint x="1290" y="210" />
+        <di:waypoint x="1290" y="285" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zdcez4_di" bpmnElement="Flow_0zdcez4">
+        <di:waypoint x="1180" y="310" />
+        <di:waypoint x="1265" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ydbsjq_di" bpmnElement="Flow_0ydbsjq">
+        <di:waypoint x="1315" y="310" />
+        <di:waypoint x="1400" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0dkxu9c_di" bpmnElement="Flow_0dkxu9c">
+        <di:waypoint x="1500" y="310" />
+        <di:waypoint x="1592" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1jbaw7i_di" bpmnElement="Flow_1jbaw7i">
+        <di:waypoint x="610" y="117" />
+        <di:waypoint x="635" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="163" y="142" width="68" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_03q8cyf_di" bpmnElement="add_contact_data">
+        <dc:Bounds x="250" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1vb16ue_di" bpmnElement="send_complaint">
+        <dc:Bounds x="380" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_19yvxv4_di" bpmnElement="Gateway_19yvxv4" isMarkerVisible="true">
+        <dc:Bounds x="635" y="92" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1x8n2v5_di" bpmnElement="Event_1x8n2v5">
+        <dc:Bounds x="872" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="846" y="142" width="89" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0gfj7za_di" bpmnElement="Gateway_0gm1cqi">
+        <dc:Bounds x="875" y="285" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_18q6scn_di" bpmnElement="Gateway_0npn2to">
+        <dc:Bounds x="635" y="235" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_06pp7ka_di" bpmnElement="Event_06pp7ka">
+        <dc:Bounds x="1592" y="292" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1585" y="335" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ztbbrb_di" bpmnElement="complaint_autovalidation">
+        <dc:Bounds x="510" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_05m0t3t_di" bpmnElement="review_complaint">
+        <dc:Bounds x="730" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0hhua9e_di" bpmnElement="send_rejection_email">
+        <dc:Bounds x="730" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0mvtbb2_di" bpmnElement="send_auto_response">
+        <dc:Bounds x="730" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0pu1xd7_di" bpmnElement="Gateway_07v5uzl" isMarkerVisible="true">
+        <dc:Bounds x="975" y="285" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1c0gg4b_di" bpmnElement="Gateway_0qigol5" isMarkerVisible="true">
+        <dc:Bounds x="1265" y="285" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ejj2p9_di" bpmnElement="send_reasponse">
+        <dc:Bounds x="1400" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1crjz98_di" bpmnElement="open_new_case">
+        <dc:Bounds x="1080" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_104bsa1_di" bpmnElement="add_to_existing_case">
+        <dc:Bounds x="1080" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0i2uhtx_di" bpmnElement="open_and_solve_case">
+        <dc:Bounds x="1080" y="380" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

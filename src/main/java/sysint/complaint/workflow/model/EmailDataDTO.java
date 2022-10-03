@@ -1,4 +1,4 @@
-package com.example.workflow.model;
+package sysint.complaint.workflow.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

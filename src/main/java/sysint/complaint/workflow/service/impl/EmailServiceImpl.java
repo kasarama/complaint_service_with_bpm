@@ -1,16 +1,14 @@
-package com.example.workflow.service.impl;
+package sysint.complaint.workflow.service.impl;
 
-import com.example.workflow.model.EmailDataDTO;
-import com.example.workflow.service.EmailService;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
+import sysint.complaint.workflow.model.EmailDataDTO;
+import sysint.complaint.workflow.service.EmailService;
 
 public class EmailServiceImpl implements EmailService {
     @Autowired

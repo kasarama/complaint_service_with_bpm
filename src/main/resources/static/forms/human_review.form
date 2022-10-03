@@ -1,0 +1,73 @@
+{
+  "components": [
+    {
+      "values": [
+        {
+          "label": "solve",
+          "value": "solve"
+        },
+        {
+          "value": "add",
+          "label": "add"
+        },
+        {
+          "value": "new",
+          "label": "new"
+        }
+      ],
+      "label": "Case action",
+      "type": "select",
+      "id": "Field_1pph1yi",
+      "key": "case_action",
+      "defaultValue": "solve",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "values": [
+        {
+          "value": "1",
+          "label": "First case"
+        },
+        {
+          "label": "Second case",
+          "value": "2"
+        }
+      ],
+      "label": "Running cases",
+      "type": "select",
+      "id": "Field_0ev1ijz",
+      "key": "case_id",
+      "disabled": false,
+      "properties": {},
+      "description": "Which case does this belong to"
+    },
+    {
+      "key": "complaint_response_body",
+      "label": "Response",
+      "type": "textfield",
+      "description": "Body of the response to the complaint",
+      "id": "Field_03ierpo",
+      "validate": {
+        "required": true
+      }
+    },
+    {
+      "action": "submit",
+      "key": "button3",
+      "label": "Send",
+      "type": "button",
+      "id": "Field_08r00ud"
+    }
+  ],
+  "type": "default",
+  "id": "Form_0v0n7n9",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.3.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.17.0",
+  "schemaVersion": 4
+}

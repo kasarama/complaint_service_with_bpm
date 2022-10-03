@@ -1,9 +1,9 @@
-package com.example.workflow.delegate;
+package sysint.complaint.workflow.delegate;
 
-import com.example.workflow.service.impl.ComplaintServiceImpl;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import sysint.complaint.workflow.service.impl.ComplaintServiceImpl;
 
 public class AutoValidateComplaint implements JavaDelegate {
     @Autowired

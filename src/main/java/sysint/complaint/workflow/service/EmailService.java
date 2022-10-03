@@ -1,6 +1,7 @@
-package com.example.workflow.service;
+package sysint.complaint.workflow.service;
 
-import com.example.workflow.model.EmailDataDTO;
+
+import sysint.complaint.workflow.model.EmailDataDTO;
 
 public interface EmailService {
 

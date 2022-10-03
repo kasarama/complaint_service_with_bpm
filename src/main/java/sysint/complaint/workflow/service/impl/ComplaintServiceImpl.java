@@ -1,6 +1,6 @@
-package com.example.workflow.service.impl;
+package sysint.complaint.workflow.service.impl;
 
-import com.example.workflow.service.ComplaintService;
+import sysint.complaint.workflow.service.ComplaintService;
 
 public class ComplaintServiceImpl implements ComplaintService {
     @Override

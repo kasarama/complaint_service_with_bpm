@@ -1,15 +1,15 @@
-package com.example.workflow;
+package sysint.complaint.workflow;
 
-import com.example.workflow.delegate.AutoValidateComplaint;
-import com.example.workflow.delegate.SendAutoResponse;
-import com.example.workflow.delegate.SendRejectionEmail;
-import com.example.workflow.delegate.SendResponseEmail;
-import com.example.workflow.service.impl.ComplaintServiceImpl;
-import com.example.workflow.service.impl.EmailServiceImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+import sysint.complaint.workflow.delegate.AutoValidateComplaint;
+import sysint.complaint.workflow.delegate.SendAutoResponse;
+import sysint.complaint.workflow.delegate.SendRejectionEmail;
+import sysint.complaint.workflow.delegate.SendResponseEmail;
+import sysint.complaint.workflow.service.impl.ComplaintServiceImpl;
+import sysint.complaint.workflow.service.impl.EmailServiceImpl;
 
 @SpringBootApplication
 public class Application {

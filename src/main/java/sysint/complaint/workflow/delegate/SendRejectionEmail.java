@@ -19,9 +19,9 @@ public class SendRejectionEmail implements JavaDelegate {
         String subject = "RE: " + (String) delegateExecution.getVariable("complaint_title");
         String email = (String) delegateExecution.getVariable("email");
 
-        emailData.setEmail(email);
+        emailData.setToEmail(email);
         emailData.setSubject(subject);
-        emailData.setBody(body);
+        emailData.setText(body);
         emailService.sendEmail(emailData);
 
     }

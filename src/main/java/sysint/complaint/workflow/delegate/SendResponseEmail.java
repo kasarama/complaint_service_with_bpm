@@ -22,9 +22,9 @@ public class SendResponseEmail  implements JavaDelegate {
         String email = (String) delegateExecution.getVariable("email");
         String body = (String) delegateExecution.getVariable("complaint_response_body");
 
-        emailData.setEmail(email);
+        emailData.setToEmail(email);
         emailData.setSubject(subject);
-        emailData.setBody(body);
+        emailData.setText(body);
         emailService.sendEmail(emailData);
 
     }

@@ -14,7 +14,7 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String EmailServiceURI = "";
+    private static final String EMAIL_SERVICE_URI = "http://localhost:8090/emails/message";
 
     @Override
     public String sendEmail(EmailDataDTO emailData) {
@@ -25,18 +25,15 @@ public class EmailServiceImpl implements EmailService {
         headers.setAccept(mediaTypeList);
         HttpEntity<EmailDataDTO> request =
                 new HttpEntity<>(emailData, headers);
-//        try {
-//            String response = restTemplate.postForObject(EmailServiceURI, request, String.class);
-//            return response;
-//
-//        } catch (Exception e) {
-//            //TODO add valid uri for email service, handle exception
-//            e.printStackTrace();
-//
-//            return "Email service is not implemented ";
-//        }
-        System.out.println("Sending not working");
-        System.out.println(emailData.getBody());
-        return "Sending not working";
+        try {
+            String response = restTemplate.postForObject(EMAIL_SERVICE_URI, request, String.class);
+            System.out.println(response);
+            return response;
+
+        } catch (Exception e) {
+            //TODO add valid uri for email service, handle exception
+            e.printStackTrace();
+            return "Sending not working";
+        }
     }
 }

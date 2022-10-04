@@ -11,7 +11,7 @@ public class SendAutoResponse implements JavaDelegate {
     @Autowired
     EmailServiceImpl emailService;
 
-    private final String body = "Processing ....";
+    private final String body = "Dear customer, thank you for keeping us busy. We will get back to you shortly.";
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
@@ -19,9 +19,9 @@ public class SendAutoResponse implements JavaDelegate {
         String subject = "RE: " + (String) delegateExecution.getVariable("complaint_title");
         String email = (String) delegateExecution.getVariable("email");
 
-        emailData.setEmail(email);
+        emailData.setToEmail(email);
         emailData.setSubject(subject);
-        emailData.setBody(body);
+        emailData.setText(body);
         emailService.sendEmail(emailData);
 
     }
